@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">CarbonTracker</string>
+    <string name="title_activity_overview_map">Map</string>
+</resources>
