@@ -1,8 +1,13 @@
 package org.conifr.carbontracker;
 
+import android.app.IntentService;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 
+import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,9 +33,6 @@ public class OverviewMap extends FragmentActivity implements OnMapReadyCallback 
         mapFragment.getMapAsync(this);
 
 
-        ActivityRecognitionClient activityRecognitionClient = ActivityRecognition.getClient(context);
-        Task task = activityRecognitionClient.requestActivityUpdates(180_000L, pendingIntent);
-
 
 
 
@@ -38,9 +40,24 @@ public class OverviewMap extends FragmentActivity implements OnMapReadyCallback 
         //1 mile radius around Digital Arts & New Media building
         //      It does a decent job of capturing all of UCSC, but it also captures some of the
         //      surrounding wilderness. TODO can we improve this?
-        builder.setCircularRegion(36.993819, -122.060573, 1609.34);
+        builder.setCircularRegion(36.993819, -122.060573, 1609.34f)
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .setRequestId("conifr-carbon-tracker-geofence")
+                .setTransitionTypes(
+                Geofence.GEOFENCE_TRANSITION_ENTER
+                        | Geofence.GEOFENCE_TRANSITION_DWELL
+                        | Geofence.GEOFENCE_TRANSITION_EXIT)
+                .setLoiteringDelay(30000);
 
         Geofence fence=builder.build();
+
+
+
+
+        ActivityRecognitionClient activityRecognitionClient = ActivityRecognition.getClient(getApplicationContext());
+        Task task = activityRecognitionClient.requestActivityUpdates(180_000L, null);
+
+
     }
 
 
