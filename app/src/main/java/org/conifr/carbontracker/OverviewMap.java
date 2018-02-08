@@ -10,6 +10,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.ActivityRecognitionClient;
+import com.google.android.gms.tasks.Task;
+
 public class OverviewMap extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -22,6 +26,21 @@ public class OverviewMap extends FragmentActivity implements OnMapReadyCallback 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
+        ActivityRecognitionClient activityRecognitionClient = ActivityRecognition.getClient(context);
+        Task task = activityRecognitionClient.requestActivityUpdates(180_000L, pendingIntent);
+
+
+
+
+        Geofence.Builder builder=new Geofence.Builder();
+        //1 mile radius around Digital Arts & New Media building
+        //      It does a decent job of capturing all of UCSC, but it also captures some of the
+        //      surrounding wilderness. TODO can we improve this?
+        builder.setCircularRegion(36.993819, -122.060573, 1609.34);
+
+        Geofence fence=builder.build();
     }
 
 
