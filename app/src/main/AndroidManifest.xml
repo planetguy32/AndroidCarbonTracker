@@ -44,6 +44,7 @@
         <activity android:name=".ProfileAbout" />
         <activity android:name=".ProfileContact" />
         <activity android:name=".ProfileLegal"></activity>
+        <activity android:name=".Leader_BoardActivity"  android:exported="true">></activity>
     </application>
 
 </manifest>
