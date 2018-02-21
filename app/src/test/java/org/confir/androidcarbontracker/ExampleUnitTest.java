@@ -1,4 +1,4 @@
-package org.conifr.carbontracker;
+package org.confir.androidcarbontracker;
 
 import org.junit.Test;
 

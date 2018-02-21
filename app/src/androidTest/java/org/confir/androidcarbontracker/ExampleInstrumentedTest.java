@@ -1,4 +1,4 @@
-package org.conifr.carbontracker;
+package org.confir.androidcarbontracker;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("org.conifr.carbontracker", appContext.getPackageName());
+        assertEquals("org.confir.androidcarbontracker", appContext.getPackageName());
     }
 }
