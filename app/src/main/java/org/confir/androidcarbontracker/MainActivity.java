@@ -3,6 +3,9 @@ package org.confir.androidcarbontracker;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -70,10 +73,12 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+
+        Fragment fragment = null;
         int id = item.getItemId();
 
         if (id == R.id.nav_profile) {
-            // Handle the camera action
+            fragment = new ProfileFragment();
         } else if (id == R.id.nav_leader_board) {
 
         } else if (id == R.id.nav_view_trips) {
@@ -82,6 +87,16 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_about) {
 
+        }
+
+        if(fragment != null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+
+            //replace from content_main.xml
+            ft.replace(R.id.screen_area, fragment);
+
+            ft.commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
