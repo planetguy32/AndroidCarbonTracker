@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_number": "581583960515",
+    "firebase_url": "https://conifr-2189f.firebaseio.com",
+    "project_id": "conifr-2189f",
+    "storage_bucket": "conifr-2189f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:581583960515:android:aa1f4b29c5f9ff64",
+        "android_client_info": {
+          "package_name": "org.confir.androidcarbontracker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "581583960515-irtjbu53oadqikvhpvuvduk3m1t3k199.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.confir.androidcarbontracker",
+            "certificate_hash": "e8ab2b791ba1b60188cc1a9b66e37b769e8c639e"
+          }
+        },
+        {
+          "client_id": "581583960515-e3g79g67iebam4uqbvvg1s5pphrdfc28.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDainrOtV5xgzVZhfV71x0r2MDiKK0MByM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "581583960515-tl7tj7sl6sonepnoj4r0nu0orqsurh17.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "ucsc.Conifr"
+              }
+            },
+            {
+              "client_id": "581583960515-e3g79g67iebam4uqbvvg1s5pphrdfc28.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
