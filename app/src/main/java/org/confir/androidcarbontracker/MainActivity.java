@@ -35,6 +35,10 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        Fragment addActivity = new AddActivityFragment();
+
+        setFragment(addActivity);
     }
 
     @Override
@@ -103,5 +107,15 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void setFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+
+        //replace from content_main.xml
+        ft.replace(R.id.screen_area, fragment);
+
+        ft.commit();
     }
 }

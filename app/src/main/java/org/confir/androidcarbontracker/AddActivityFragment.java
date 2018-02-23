@@ -8,15 +8,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * Created by Justin on 2/21/18.
+ * Created by Justin on 2/22/18.
  */
 
-public class AboutFragment extends Fragment {
+public class AddActivityFragment extends Fragment{
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_about, null);
+        return inflater.inflate(R.layout.fragment_add_activity, null);
     }
 
     @Override
