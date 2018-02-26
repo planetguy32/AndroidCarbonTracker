@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/ucsc1"
+    tools:context="org.confir.androidcarbontracker.LoginActivity">
+    tools:layout_editor_absoluteY="25dp">
+
+    <EditText
+        android:id="@+id/username_edit_text"
+        android:layout_width="215dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="126dp"
+        android:background="@android:color/holo_green_light"
+        android:ems="10"
+        android:hint="  Username"
+        android:inputType="textPersonName"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@android:color/holo_green_light" />
+
+    <EditText
+        android:id="@+id/password_edit_text"
+        android:layout_width="215dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="34dp"
+        android:background="@android:color/holo_green_light"
+        android:ems="10"
+        android:hint="  Password"
+        android:inputType="textPassword"
+        android:singleLine="true"
+        android:textColor="@android:color/background_light"
+        android:textColorHint="@android:color/background_light"
+        app:layout_constraintStart_toStartOf="@+id/username_edit_text"
+        app:layout_constraintTop_toBottomOf="@+id/username_edit_text" />
+
+    <Button
+        android:id="@+id/login_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="120dp"
+        android:background="@android:color/holo_orange_light"
+        android:text="Login"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/password_edit_text"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/create_account_button"
+        tools:background="@android:color/holo_orange_light" />
+
+    <Button
+        android:id="@+id/create_account_button"
+        android:layout_width="206dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="65dp"
+        android:layout_marginTop="66dp"
+        android:background="@android:color/holo_orange_light"
+        android:text="Create Account"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login_button"
+        app:layout_constraintVertical_bias="0.787" />
+</android.support.constraint.ConstraintLayout>
+
