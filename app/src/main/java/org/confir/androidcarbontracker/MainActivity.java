@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_profile) {
             fragment = new ProfileFragment();
         } else if (id == R.id.nav_leader_board) {
+            fragment = new LeaderboardFragment();
 
         } else if (id == R.id.nav_view_trips) {
 
@@ -159,6 +160,20 @@ public class MainActivity extends AppCompatActivity
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
             return inflater.inflate(R.layout.fragment_add_activity, null);
+        }
+
+        @Override
+        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+        }
+    }
+
+
+    public static class LeaderboardFragment extends Fragment {
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            return inflater.inflate(R.layout.fragment_leader_board, null);
         }
 
         @Override
