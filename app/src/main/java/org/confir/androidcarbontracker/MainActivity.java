@@ -21,6 +21,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -178,6 +180,19 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
+
+
+
+            String[] UserArray = {"User1","User1","User1","User1",
+                    "User1","User1","User1","User1"};
+
+
+            ArrayAdapter<String> listViewAdapter= new ArrayAdapter<String>(getContext(),
+                    android.R.layout.simple_list_item_1,  UserArray);
+
+
+            ListView listView = (ListView) view.findViewById(R.id.LeaderView);
+            listView.setAdapter(listViewAdapter);
         }
     }
 
