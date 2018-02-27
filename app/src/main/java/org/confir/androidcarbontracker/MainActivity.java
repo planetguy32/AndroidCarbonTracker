@@ -103,11 +103,10 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_view_trips) {
 
-        } else if (id == R.id.nav_communicate) {
-
+        } else if (id == R.id.nav_add_activity) {
+            fragment = new AddActivityFragment();
         } else if (id == R.id.nav_legal) {
             fragment = new LegalFragment();
-
         } else if (id == R.id.nav_about) {
             fragment = new AboutFragment();
         } else if (id == R.id.nav_logout) {

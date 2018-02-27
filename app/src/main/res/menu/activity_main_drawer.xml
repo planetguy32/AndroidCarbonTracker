@@ -15,8 +15,8 @@
             android:title="View Trips" />
 
         <item
-            android:id="@+id/nav_communicate"
-            android:title="Communicate" />
+            android:id="@+id/nav_add_activity"
+            android:title="Add Activity" />
         <item
             android:id="@+id/nav_legal"
             android:title="Legal" />
