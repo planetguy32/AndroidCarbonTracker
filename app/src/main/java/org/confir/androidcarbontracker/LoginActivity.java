@@ -18,6 +18,7 @@ package org.confir.androidcarbontracker;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -122,6 +123,7 @@ public class LoginActivity extends Activity implements
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
+                            goToMainActivity();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
@@ -156,6 +158,7 @@ public class LoginActivity extends Activity implements
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
+                            goToMainActivity();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
@@ -199,6 +202,7 @@ public class LoginActivity extends Activity implements
                             Toast.makeText(LoginActivity.this,
                                     "Verification email sent to " + user.getEmail(),
                                     Toast.LENGTH_SHORT).show();
+                            goToMainActivity();
                         } else {
                             Log.e(TAG, "sendEmailVerification", task.getException());
                             Toast.makeText(LoginActivity.this,
@@ -267,5 +271,10 @@ public class LoginActivity extends Activity implements
         } else if (i == R.id.verify_email_button) {
             sendEmailVerification();
         }
+    }
+
+    public void goToMainActivity(){
+        Intent intent=new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }
