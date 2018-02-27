@@ -99,9 +99,8 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_profile) {
             fragment = new ProfileFragment();
-        } else if (id == R.id.nav_leader_board) {
+        } else if (id == R.id.nav_leaderboard) {
             fragment = new LeaderboardFragment();
-
         } else if (id == R.id.nav_view_trips) {
 
         } else if (id == R.id.nav_add_activity) {
@@ -199,8 +198,8 @@ public class MainActivity extends AppCompatActivity
     public static class ProfileFragment extends Fragment{
         //To set the layout for the fragment, we must override 2 methods
         //onCreateView() and onViewCreated()
-
         //onCreateView() returns the view for the fragment.
+
         @Nullable
         @Override
         public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
