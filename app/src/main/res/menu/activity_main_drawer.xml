@@ -13,17 +13,26 @@
         <item
             android:id="@+id/nav_view_trips"
             android:title="View Trips" />
+
+        <item
+            android:id="@+id/nav_communicate"
+            android:title="Communicate" />
+        <item
+            android:id="@+id/nav_legal"
+            android:title="Legal" />
+        <item
+            android:id="@+id/nav_about"
+            android:title="About" />
     </group>
 
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_legal"
-                android:title="Legal" />
-            <item
-                android:id="@+id/nav_about"
-                android:title="About" />
-        </menu>
-    </item>
+
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_logout"
+            android:title="Logout" />
+    </group>
+
+
 
 </menu>

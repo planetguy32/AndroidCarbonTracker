@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AndroidCarbonTracker.iml" filepath="$PROJECT_DIR$/AndroidCarbonTracker.iml" />
-      <module fileurl="file://$PROJECT_DIR$/CarbonTracker.iml" filepath="$PROJECT_DIR$/CarbonTracker.iml" />
+      <module fileurl="file://C:\Users\kevin\AndroidStudioProjects\AndroidCarbonTracker\CarbonTracker.iml" filepath="C:\Users\kevin\AndroidStudioProjects\AndroidCarbonTracker\CarbonTracker.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

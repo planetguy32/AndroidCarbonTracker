@@ -1,5 +1,6 @@
 package org.confir.androidcarbontracker;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -102,11 +103,15 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_view_trips) {
 
+        } else if (id == R.id.nav_communicate) {
+
         } else if (id == R.id.nav_legal) {
             fragment = new LegalFragment();
 
         } else if (id == R.id.nav_about) {
             fragment = new AboutFragment();
+        } else if (id == R.id.nav_logout) {
+            goToLoginActivity();
         }
 
         if(fragment != null) {
@@ -193,5 +198,10 @@ public class MainActivity extends AppCompatActivity
         public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
         }
+    }
+
+    public void goToLoginActivity(){
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
 }
