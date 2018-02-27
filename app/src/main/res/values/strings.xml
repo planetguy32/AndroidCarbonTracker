@@ -20,6 +20,13 @@
         completions."
     </string>
 
+    <string name="loading">"Loading..."</string>
+    <string name="auth_failed">"Auth failed"</string>
+    <string name="signed_out">"Signed Out"</string>
+    <string name="emailpassword_status_fmt">"emailpassword_status_fmt %s %b"</string>
+    <string name="firebase_status_fmt">"firebase_status_fmt %s $s"</string>
+
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
