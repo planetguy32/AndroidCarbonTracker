@@ -22,6 +22,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -225,6 +226,15 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
+
+            EditText nameEditText = (EditText)view.findViewById(R.id.nameEditText);
+            nameEditText.setText("Name");//set the text in edit text
+
+            EditText emailEditText = (EditText)view.findViewById(R.id.emailEditText);
+            emailEditText.setText("Email");//set the text in edit text
+
+            EditText collegeEditText = (EditText)view.findViewById(R.id.collegeEditText);
+            collegeEditText.setText("College");//set the text in edit text
         }
     }
 
