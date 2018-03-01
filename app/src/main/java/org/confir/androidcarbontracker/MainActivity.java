@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        firebaseAuth=FirebaseAuth.getInstance();
+        firebaseAuth = FirebaseAuth.getInstance();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -116,7 +117,7 @@ public class MainActivity extends AppCompatActivity
             goToLoginActivity();
         }
 
-        if(fragment != null) {
+        if (fragment != null) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction ft = fragmentManager.beginTransaction().addToBackStack(null);
 
@@ -156,7 +157,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public static class AddActivityFragment extends Fragment{
+    public static class AddActivityFragment extends Fragment {
 
         @Nullable
         @Override
@@ -167,6 +168,16 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
+
+            String[] arraySpinner = {"Bike", "Walking", "Car", "Bus"};
+
+            Spinner s = (Spinner) view.findViewById(R.id.transportationSpinner);
+
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, arraySpinner);
+
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+            s.setAdapter(adapter);
         }
     }
 
@@ -183,13 +194,12 @@ public class MainActivity extends AppCompatActivity
             super.onViewCreated(view, savedInstanceState);
 
 
+            String[] UserArray = {"User1", "User1", "User1", "User1",
+                    "User1", "User1", "User1", "User1"};
 
-            String[] UserArray = {"User1","User1","User1","User1",
-                    "User1","User1","User1","User1"};
 
-
-            ArrayAdapter<String> listViewAdapter= new ArrayAdapter<String>(getContext(),
-                    android.R.layout.simple_list_item_1,  UserArray);
+            ArrayAdapter<String> listViewAdapter = new ArrayAdapter<String>(getContext(),
+                    android.R.layout.simple_list_item_1, UserArray);
 
 
             ListView listView = (ListView) view.findViewById(R.id.LeaderView);
@@ -211,7 +221,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     //Every fragment needs a layout file
-    public static class ProfileFragment extends Fragment{
+    public static class ProfileFragment extends Fragment {
         //To set the layout for the fragment, we must override 2 methods
         //onCreateView() and onViewCreated()
         //onCreateView() returns the view for the fragment.
@@ -227,18 +237,18 @@ public class MainActivity extends AppCompatActivity
         public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
 
-            EditText nameEditText = (EditText)view.findViewById(R.id.nameEditText);
+            EditText nameEditText = (EditText) view.findViewById(R.id.nameEditText);
             nameEditText.setText("Name");//set the text in edit text
 
-            EditText emailEditText = (EditText)view.findViewById(R.id.emailEditText);
+            EditText emailEditText = (EditText) view.findViewById(R.id.emailEditText);
             emailEditText.setText("Email");//set the text in edit text
 
-            EditText collegeEditText = (EditText)view.findViewById(R.id.collegeEditText);
+            EditText collegeEditText = (EditText) view.findViewById(R.id.collegeEditText);
             collegeEditText.setText("College");//set the text in edit text
         }
     }
 
-    public void goToLoginActivity(){
+    public void goToLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
