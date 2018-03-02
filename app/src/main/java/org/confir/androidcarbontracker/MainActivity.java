@@ -169,8 +169,8 @@ public class MainActivity extends AppCompatActivity
 
         String[] arraySpinner = {"Bike", "Walking", "Car", "Bus"};
         String[] codeNames = {"bike", "foot", "car", "bus"};
-
-        double[] carbonPerMile = {0, 0, 1, 0.5};
+        //Conversion factors
+        double[] carbonPerMile = {0.34, 0.34, 0.91, 0.5};
 
         @Nullable
         @Override
@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity
             Spinner s = (Spinner) view.getRootView().findViewById(R.id.transportationSpinner);
             if(s==null)
                 return;
-            int transitMeansType = s.getSelectedItemPosition();
+            final int transitMeansType = s.getSelectedItemPosition();
             EditText textbox=(EditText) view.getRootView().findViewById(R.id.distanceEditText);
             try{
                 final double distance=Double.parseDouble(textbox.getText().toString());
@@ -236,19 +236,33 @@ public class MainActivity extends AppCompatActivity
                  *************************************************/
 
                 myHome.child("distance-stats")
-                        .child(codeNames[transitMeansType])
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                Number totalDistanceAsNum=(Number)dataSnapshot.getValue();
-                                double totalDistance;
-                                if(totalDistanceAsNum == null)
-                                    totalDistance = 0.0;
-                                else
-                                    totalDistance=totalDistanceAsNum.doubleValue();
-                                totalDistance+=distance;
-                                myHome.child("distance-stats")
-                                        .child(dataSnapshot.getKey()).setValue(totalDistance);
+                                double totalCarbon=0;
+                                for (int i = 0; i < codeNames.length; i++) {
+                                    Number totalDistanceFromDB = (Number) dataSnapshot.child(codeNames[i]).getValue();
+
+                                    double totalDistance;
+                                    if (totalDistanceFromDB == null)
+                                        totalDistance = 0.0;
+                                    else
+                                        totalDistance = totalDistanceFromDB.doubleValue();
+
+                                    Log.d("1", totalDistance+"");
+
+                                    if(i == transitMeansType) {
+                                        totalDistance += distance;
+                                        myHome.child("distance-stats")
+                                                .child(codeNames[i])
+                                                .setValue(totalDistance);
+                                    }
+                                    Log.d("2", totalDistance+"");
+                                    totalCarbon += totalDistance * carbonPerMile[i];
+
+                                }
+                                myHome.child("profile")
+                                        .child("total-carbon").setValue(totalCarbon);
 
                                 Toast.makeText(view.getContext(),
                                         "Added trip",
