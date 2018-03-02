@@ -9,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -29,23 +31,35 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private FirebaseAuth firebaseAuth;
+    private static FirebaseAuth firebaseAuth;
+    private static FirebaseApp firebaseApp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseApp=FirebaseApp.initializeApp(this);
+        firebaseAuth = FirebaseAuth.getInstance(firebaseApp);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -157,7 +171,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public static class AddActivityFragment extends Fragment {
+    public static class AddActivityFragment extends Fragment implements View.OnClickListener {
+
+        String[] arraySpinner = {"Bike", "Walking", "Car", "Bus"};
+        String[] codeNames = {"bike", "foot", "car", "bus"};
+
+        double[] carbonPerMile = {0, 0, 1, 0.5};
 
         @Nullable
         @Override
@@ -169,8 +188,6 @@ public class MainActivity extends AppCompatActivity
         public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
 
-            String[] arraySpinner = {"Bike", "Walking", "Car", "Bus"};
-
             Spinner s = (Spinner) view.findViewById(R.id.transportationSpinner);
 
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, arraySpinner);
@@ -178,7 +195,82 @@ public class MainActivity extends AppCompatActivity
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
             s.setAdapter(adapter);
+
+            Button submitButton=(Button) view.findViewById(R.id.submitBtn);
+
+            submitButton.setOnClickListener(this);
+            Toast.makeText(view.getContext(),
+                    "Added click handler",
+                    Toast.LENGTH_SHORT).show();
         }
+
+        @Override
+        public void onClick(final View view) {
+            Spinner s = (Spinner) view.getRootView().findViewById(R.id.transportationSpinner);
+            if(s==null)
+                return;
+            int transitMeansType = s.getSelectedItemPosition();
+            EditText textbox=(EditText) view.getRootView().findViewById(R.id.distanceEditText);
+            try{
+                final double distance=Double.parseDouble(textbox.getText().toString());
+                final DatabaseReference myHome=FirebaseDatabase.getInstance(firebaseApp).getReference()
+                        .child(firebaseAuth.getCurrentUser().getUid());
+
+                Long timestamp = (Long) System.currentTimeMillis()/1000l;
+
+                /**************************************************
+                        Add the leg
+                 **************************************************/
+                DatabaseReference leg=myHome
+                        .child("legs")
+                        .child(timestamp+"");
+                leg.child("start").setValue(timestamp);
+                leg.child("means").setValue(codeNames[transitMeansType]);
+                leg.child("distance").setValue(distance);
+                Log.e("a", leg.toString());
+
+                /**************************************************
+                 Add the trip
+                 ***************************************************/
+                myHome
+                        .child("trips")
+                        .child("trip-"+timestamp)
+                        .setValue("1");
+
+                /*************************************************
+                 * Update User Stats
+                 *************************************************/
+
+                myHome.child("distance-stats")
+                        .child(codeNames[transitMeansType])
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Number totalDistanceAsNum=(Number)dataSnapshot.getValue();
+                                double totalDistance;
+                                if(totalDistanceAsNum == null)
+                                    totalDistance = 0.0;
+                                else
+                                    totalDistance=totalDistanceAsNum.doubleValue();
+                                totalDistance+=distance;
+                                myHome.child("distance-stats")
+                                        .child(dataSnapshot.getKey()).setValue(totalDistance);
+
+                                Toast.makeText(view.getContext(),
+                                        "Added trip",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+            } catch(NumberFormatException e) {
+
+            }
+        }
+
     }
 
 
