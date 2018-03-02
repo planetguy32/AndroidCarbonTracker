@@ -92,6 +92,9 @@ public class LoginActivity extends Activity implements
 
         // [START initialize_auth]
         mAuth = FirebaseAuth.getInstance();
+        if(mAuth.getCurrentUser() != null){
+            goToMainActivity();
+        }
         // [END initialize_auth]
     }
 
