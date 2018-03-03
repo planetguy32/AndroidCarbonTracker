@@ -28,20 +28,17 @@
         <TextView
             android:id="@+id/title_text"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sign In" />
+            android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/status"
-            android:text="Signed Out"
-            android:layout_height="30px"
-            android:layout_width="300px" />
+            android:layout_width="300px"
+            android:layout_height="30px" />
 
         <TextView
             android:id="@+id/detail"
-            tools:text="Firebase User ID: 123456789abc"
-            android:layout_height="30px"
-            android:layout_width="300px" />
+            android:layout_width="300px"
+            android:layout_height="30px" />
 
     </LinearLayout>
 
