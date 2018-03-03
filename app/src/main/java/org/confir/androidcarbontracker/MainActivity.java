@@ -2,14 +2,12 @@ package org.confir.androidcarbontracker;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.text.format.DateFormat;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +20,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,20 +28,14 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import java.util.Calendar;
-import java.util.Date;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -128,6 +121,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_about) {
             fragment = new AboutFragment();
         } else if (id == R.id.nav_logout) {
+            firebaseAuth.signOut();
             goToLoginActivity();
         }
 
@@ -175,8 +169,8 @@ public class MainActivity extends AppCompatActivity
 
         String[] arraySpinner = {"Bike", "Walking", "Car", "Bus"};
         String[] codeNames = {"bike", "foot", "car", "bus"};
-
-        double[] carbonPerMile = {0, 0, 1, 0.5};
+        //Conversion factors
+        double[] carbonPerMile = {0.34, 0.34, 0.91, 0.5};
 
         @Nullable
         @Override
@@ -199,9 +193,9 @@ public class MainActivity extends AppCompatActivity
             Button submitButton=(Button) view.findViewById(R.id.submitBtn);
 
             submitButton.setOnClickListener(this);
-            Toast.makeText(view.getContext(),
-                    "Added click handler",
-                    Toast.LENGTH_SHORT).show();
+//            Toast.makeText(view.getContext(),
+//                    "Added click handler",
+//                    Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -209,7 +203,7 @@ public class MainActivity extends AppCompatActivity
             Spinner s = (Spinner) view.getRootView().findViewById(R.id.transportationSpinner);
             if(s==null)
                 return;
-            int transitMeansType = s.getSelectedItemPosition();
+            final int transitMeansType = s.getSelectedItemPosition();
             EditText textbox=(EditText) view.getRootView().findViewById(R.id.distanceEditText);
             try{
                 final double distance=Double.parseDouble(textbox.getText().toString());
@@ -242,19 +236,33 @@ public class MainActivity extends AppCompatActivity
                  *************************************************/
 
                 myHome.child("distance-stats")
-                        .child(codeNames[transitMeansType])
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                Number totalDistanceAsNum=(Number)dataSnapshot.getValue();
-                                double totalDistance;
-                                if(totalDistanceAsNum == null)
-                                    totalDistance = 0.0;
-                                else
-                                    totalDistance=totalDistanceAsNum.doubleValue();
-                                totalDistance+=distance;
-                                myHome.child("distance-stats")
-                                        .child(dataSnapshot.getKey()).setValue(totalDistance);
+                                double totalCarbon=0;
+                                for (int i = 0; i < codeNames.length; i++) {
+                                    Number totalDistanceFromDB = (Number) dataSnapshot.child(codeNames[i]).getValue();
+
+                                    double totalDistance;
+                                    if (totalDistanceFromDB == null)
+                                        totalDistance = 0.0;
+                                    else
+                                        totalDistance = totalDistanceFromDB.doubleValue();
+
+                                    Log.d("1", totalDistance+"");
+
+                                    if(i == transitMeansType) {
+                                        totalDistance += distance;
+                                        myHome.child("distance-stats")
+                                                .child(codeNames[i])
+                                                .setValue(totalDistance);
+                                    }
+                                    Log.d("2", totalDistance+"");
+                                    totalCarbon += totalDistance * carbonPerMile[i];
+
+                                }
+                                myHome.child("profile")
+                                        .child("total-carbon").setValue(totalCarbon);
 
                                 Toast.makeText(view.getContext(),
                                         "Added trip",
@@ -313,10 +321,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     //Every fragment needs a layout file
-    public static class ProfileFragment extends Fragment {
+    public static class ProfileFragment extends Fragment implements View.OnClickListener, ValueEventListener {
+        private EditText nameEditText;
+        private EditText yearEditText;
+        private EditText collegeEditText;
         //To set the layout for the fragment, we must override 2 methods
         //onCreateView() and onViewCreated()
         //onCreateView() returns the view for the fragment.
+
+        private int lastChangedByFirebaseCounter=0;
+        private int lastChangedByUserCounter=0;
 
         @Nullable
         @Override
@@ -329,14 +343,70 @@ public class MainActivity extends AppCompatActivity
         public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
 
-            EditText nameEditText = (EditText) view.findViewById(R.id.nameEditText);
-            nameEditText.setText("Name");//set the text in edit text
+            nameEditText = (EditText) view.findViewById(R.id.nameEditText);
+            yearEditText = (EditText) view.findViewById(R.id.yearEditText);
+            collegeEditText = (EditText) view.findViewById(R.id.collegeEditText);
 
-            EditText emailEditText = (EditText) view.findViewById(R.id.emailEditText);
-            emailEditText.setText("Email");//set the text in edit text
+            Button button=view.findViewById(R.id.profile_save_button);
+            button.setOnClickListener(this);
 
-            EditText collegeEditText = (EditText) view.findViewById(R.id.collegeEditText);
-            collegeEditText.setText("College");//set the text in edit text
+            //User's home node
+            DatabaseReference userHome = FirebaseDatabase.getInstance(firebaseApp)
+                    .getReference().child(firebaseAuth.getCurrentUser().getUid());
+
+            DatabaseReference profile = userHome.child("profile");
+
+            profile.addValueEventListener(this);
+        }
+
+        @Override
+        public void onDataChange(DataSnapshot profile) {
+           if(profile.hasChild("name")){
+               nameEditText.setText(profile.child("name").getValue().toString());
+           }
+            if(profile.hasChild("year")){
+                yearEditText.setText(profile.child("year").getValue().toString());
+            }
+            if(profile.hasChild("college")){
+                collegeEditText.setText(profile.child("college").getValue().toString());
+            }
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+
+        @Override
+        public void onClick(View view) {
+//
+//            //Ignore if we've just changed it by pulling from Firebase
+//            // If not, this changes Firebase, then Firebase notices a change and changes the text
+//            // field, which fires this event and repeat infinitely.
+//            if(lastChangedByFirebaseCounter > 0){
+//                lastChangedByFirebaseCounter--;
+//                return;
+//            }
+//
+//            lastChangedByUserCounter++;
+
+            //User's home node
+            DatabaseReference userHome = FirebaseDatabase.getInstance(firebaseApp)
+                    .getReference().child(firebaseAuth.getCurrentUser().getUid());
+
+            DatabaseReference profile = userHome.child("profile");
+
+            String name=this.nameEditText.getText().toString();
+            profile.child("name").setValue(name);
+
+            String year=this.yearEditText.getText().toString();
+            profile.child("year").setValue(year);
+
+            String college=this.collegeEditText.getText().toString();
+            profile.child("college").setValue(college);
+
+            String email=FirebaseAuth.getInstance().getCurrentUser().getEmail();
+            profile.child("email").setValue(email);
         }
     }
 
