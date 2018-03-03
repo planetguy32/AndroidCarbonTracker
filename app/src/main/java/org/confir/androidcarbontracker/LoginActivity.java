@@ -126,6 +126,7 @@ public class LoginActivity extends Activity implements
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
+                            MainActivity.firstTime = true;
                             goToMainActivity();
                         } else {
                             // If sign in fails, display a message to the user.
@@ -276,8 +277,9 @@ public class LoginActivity extends Activity implements
         }
     }
 
-    public void goToMainActivity(){
+    public boolean goToMainActivity(){
         Intent intent=new Intent(this, MainActivity.class);
         startActivity(intent);
+        return false;
     }
 }

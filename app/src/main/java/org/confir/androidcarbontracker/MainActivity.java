@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity
     private static FirebaseApp firebaseApp;
 
     private static String displayName;
+    public static boolean firstTime = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +64,15 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // set the default nav drawer page
-        Fragment addActivity = new AddActivityFragment();
+        if(!firstTime) {
+            Fragment addActivity = new AddActivityFragment();
+            setFragment(addActivity);
+        } else {
+            Fragment profileFragment = new ProfileFragment();
+            setFragment(profileFragment);
+            firstTime = false;
+        }
 
-        setFragment(addActivity);
 
         FirebaseDatabase.getInstance(firebaseApp)
                 .getReference()
