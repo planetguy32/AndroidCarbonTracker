@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
@@ -39,6 +40,12 @@
             android:id="@+id/detail"
             android:layout_width="300px"
             android:layout_height="30px" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="318dp"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/conifr" />
 
     </LinearLayout>
 
