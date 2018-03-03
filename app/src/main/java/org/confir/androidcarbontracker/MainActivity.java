@@ -39,6 +39,8 @@ public class MainActivity extends AppCompatActivity
     private static FirebaseAuth firebaseAuth;
     private static FirebaseApp firebaseApp;
 
+    private static String displayName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +64,26 @@ public class MainActivity extends AppCompatActivity
         Fragment addActivity = new AddActivityFragment();
 
         setFragment(addActivity);
+
+        FirebaseDatabase.getInstance(firebaseApp)
+                .getReference()
+                .child("android")
+                .child(firebaseAuth.getCurrentUser().getUid())
+                .child("profile")
+                .child("name")
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        displayName=dataSnapshot.getValue(String.class);
+                        if(displayName == null || displayName.equals(""))
+                            displayName="Anonymous";
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     @Override
@@ -259,7 +281,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                double totalCarbon=0;
+                double totalCarbon=100;
                 for (int i = 0; i < codeNames.length; i++) {
                     Number totalDistanceFromDB = (Number) dataSnapshot.child(codeNames[i]).getValue();
 
@@ -297,43 +319,41 @@ public class MainActivity extends AppCompatActivity
 
                 databaseRoot.child("leaderboard").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
+                    public void onDataChange(DataSnapshot leaderboardSnapshot) {
                         DatabaseReference leaderboard=databaseRoot.child("leaderboard");
                         //Used when we start shifting users down a place
                         double mostRecentScore = totalScore;
-                        String lastUsername=FirebaseAuth.getInstance().getCurrentUser().getUid();
+                        String lastUsername=displayName;
+                        String lastUid=firebaseAuth.getCurrentUser().getUid();
 
                         int i;
 
                         for(i=1; i<=10; i++){
-                            Log.d("foo", "Skipping "+i);
-                            DataSnapshot currentPlacer = dataSnapshot.child(Integer.toString(i));
-                            Object currentPlacerScore = currentPlacer.child("score").getValue();
-                            if(currentPlacerScore == null)
-                                currentPlacerScore=(Object)0;
-                            double currentScoreD = ((Number)currentPlacerScore).doubleValue();
-                            Log.d("foo", "totalScore: "+totalScore);
-                            Log.d("foo", "oldScore: "+currentPlacerScore);
+                            //Log.d("foo", "Skipping "+i);
+                            DataSnapshot currentPlacer = leaderboardSnapshot.child(Integer.toString(i));
+                            double currentScoreD = ((Number)currentPlacer.child("score").getValue()).doubleValue();
+                            //Log.d("foo", "totalScore: "+totalScore);
+                            //Log.d("foo", "oldScore: "+currentPlacerScore);
                             if(currentScoreD < totalScore){
                                 break;
                             }
                         }
 
                         for(; i<=10; i++){
-                            Log.d("foo", "Moving "+i);
+                            //Log.d("foo", "Moving "+i);
+                            DataSnapshot snapshot = leaderboardSnapshot.child(Integer.toString(i));
+
                             leaderboard.child(Integer.toString(i)).child("score").setValue(mostRecentScore);
                             leaderboard.child(Integer.toString(i)).child("user").setValue(lastUsername);
+                            leaderboard.child(Integer.toString(i)).child("uid").setValue(lastUid);
 
-                            DataSnapshot currentPlacer = dataSnapshot.child(Integer.toString(i));
-                            Object currentPlacerScore = currentPlacer.child("score").getValue();
-                            if(currentPlacerScore == null)
-                                currentPlacerScore=(Object)0;
-                            double currentScoreD = ((Number)currentPlacerScore).doubleValue();
-                            if(currentScoreD < totalScore){
+                            mostRecentScore = ((Number)snapshot.child("score").getValue()).doubleValue();
+                            lastUsername=snapshot.child("user").getValue(String.class);
+                            lastUid=snapshot.child("uid").getValue(String.class);
+                            if(lastUid==null)lastUid="";
+
+                            if(lastUid.equals(firebaseAuth.getCurrentUser().getUid()))
                                 break;
-                            }
-                            mostRecentScore = currentScoreD;
-                            lastUsername=currentPlacer.child("user").getValue(String.class);
                         }
                     }
 
@@ -365,16 +385,42 @@ public class MainActivity extends AppCompatActivity
             super.onViewCreated(view, savedInstanceState);
 
 
-            String[] UserArray = {"User1", "User1", "User1", "User1",
-                    "User1", "User1", "User1", "User1"};
+            final String[] UserArray = new String[10];
+            for(int i=0; i<UserArray.length; i++){
+                UserArray[i]="";
+            }
 
 
-            ArrayAdapter<String> listViewAdapter = new ArrayAdapter<String>(getContext(),
+            final ArrayAdapter<String> listViewAdapter = new ArrayAdapter<String>(getContext(),
                     android.R.layout.simple_list_item_1, UserArray);
 
 
             ListView listView = (ListView) view.findViewById(R.id.LeaderView);
             listView.setAdapter(listViewAdapter);
+
+            FirebaseDatabase.getInstance(firebaseApp).getReference()
+                    .child("android")
+                    .child("leaderboard")
+                    .addValueEventListener(new ValueEventListener(){
+
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for(int i=0; i<10; i++){
+                                DataSnapshot currentPlacer = dataSnapshot.child(Integer.toString(i+1));
+
+                                double score = ((Number)currentPlacer.child("score").getValue()).doubleValue();
+                                String uid=currentPlacer.child("user").getValue(String.class);
+
+                                UserArray[i]=(i+1)+": "+uid+" (score: "+((int)score)+")";
+                            }
+                            listViewAdapter.notifyDataSetChanged();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
         }
     }
 
