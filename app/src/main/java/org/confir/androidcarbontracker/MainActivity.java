@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
@@ -58,9 +59,10 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // set the default nav drawer page
         Fragment addActivity = new AddActivityFragment();
 
         setFragment(addActivity);
@@ -77,6 +79,14 @@ public class MainActivity extends AppCompatActivity
                         displayName=dataSnapshot.getValue(String.class);
                         if(displayName == null || displayName.equals(""))
                             displayName="Anonymous";
+
+                        //set nav name
+                        TextView navNameTextView = (TextView) findViewById(R.id.navNameTextView);
+                        navNameTextView.setText(displayName);
+
+                        //set nav email
+                        TextView navEmailTextView = (TextView) findViewById(R.id.navEmailTextView);
+                        navEmailTextView.setText(firebaseAuth.getCurrentUser().getEmail());
                     }
 
                     @Override
@@ -84,7 +94,10 @@ public class MainActivity extends AppCompatActivity
 
                     }
                 });
+
+
     }
+
 
     @Override
     public void onBackPressed() {
