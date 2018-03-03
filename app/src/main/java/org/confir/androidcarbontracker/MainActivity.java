@@ -6,8 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +18,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,7 +27,6 @@ import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -170,7 +166,7 @@ public class MainActivity extends AppCompatActivity
         String[] arraySpinner = {"Bike", "Walking", "Car", "Bus"};
         String[] codeNames = {"bike", "foot", "car", "bus"};
         //Conversion factors
-        double[] carbonPerMile = {0.34, 0.34, 0.91, 0.5};
+        double[] scorePerMile = {12, 12, -4, -2};
 
         @Nullable
         @Override
@@ -207,7 +203,9 @@ public class MainActivity extends AppCompatActivity
             EditText textbox=(EditText) view.getRootView().findViewById(R.id.distanceEditText);
             try{
                 final double distance=Double.parseDouble(textbox.getText().toString());
-                final DatabaseReference myHome=FirebaseDatabase.getInstance(firebaseApp).getReference()
+                final DatabaseReference databaseRoot=FirebaseDatabase.getInstance(firebaseApp).getReference()
+                        .child("android");
+                final DatabaseReference myHome=databaseRoot
                         .child(firebaseAuth.getCurrentUser().getUid());
 
                 Long timestamp = (Long) System.currentTimeMillis()/1000l;
@@ -236,49 +234,122 @@ public class MainActivity extends AppCompatActivity
                  *************************************************/
 
                 myHome.child("distance-stats")
-                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                double totalCarbon=0;
-                                for (int i = 0; i < codeNames.length; i++) {
-                                    Number totalDistanceFromDB = (Number) dataSnapshot.child(codeNames[i]).getValue();
+                        .addListenerForSingleValueEvent(new ScoreAndUpdateListener(transitMeansType, distance, myHome, view, databaseRoot));
 
-                                    double totalDistance;
-                                    if (totalDistanceFromDB == null)
-                                        totalDistance = 0.0;
-                                    else
-                                        totalDistance = totalDistanceFromDB.doubleValue();
 
-                                    Log.d("1", totalDistance+"");
-
-                                    if(i == transitMeansType) {
-                                        totalDistance += distance;
-                                        myHome.child("distance-stats")
-                                                .child(codeNames[i])
-                                                .setValue(totalDistance);
-                                    }
-                                    Log.d("2", totalDistance+"");
-                                    totalCarbon += totalDistance * carbonPerMile[i];
-
-                                }
-                                myHome.child("profile")
-                                        .child("total-carbon").setValue(totalCarbon);
-
-                                Toast.makeText(view.getContext(),
-                                        "Added trip",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
             } catch(NumberFormatException e) {
 
             }
         }
 
+        private class ScoreAndUpdateListener implements ValueEventListener {
+            private final int transitMeansType;
+            private final double distance;
+            private final DatabaseReference myHome;
+            private final View view;
+            private final DatabaseReference databaseRoot;
+
+            public ScoreAndUpdateListener(int transitMeansType, double distance, DatabaseReference myHome, View view, DatabaseReference databaseRoot) {
+                this.transitMeansType = transitMeansType;
+                this.distance = distance;
+                this.myHome = myHome;
+                this.view = view;
+                this.databaseRoot = databaseRoot;
+            }
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                double totalCarbon=0;
+                for (int i = 0; i < codeNames.length; i++) {
+                    Number totalDistanceFromDB = (Number) dataSnapshot.child(codeNames[i]).getValue();
+
+                    double totalDistance;
+                    if (totalDistanceFromDB == null)
+                        totalDistance = 0.0;
+                    else
+                        totalDistance = totalDistanceFromDB.doubleValue();
+
+                    Log.d("1", totalDistance + "");
+
+                    if (i == transitMeansType) {
+                        totalDistance += distance;
+                        myHome.child("distance-stats")
+                                .child(codeNames[i])
+                                .setValue(totalDistance);
+                    }
+                    Log.d("2", totalDistance + "");
+                    totalCarbon += totalDistance * scorePerMile[i];
+
+                }
+
+                myHome.child("profile")
+                        .child("total-carbon").setValue(totalCarbon);
+
+                Toast.makeText(view.getContext(),
+                        "Added trip",
+                        Toast.LENGTH_SHORT).show();
+
+                /*************************
+                 * Update LEaderboard
+                 ****************************/
+
+                final double totalScore=totalCarbon;
+
+                databaseRoot.child("leaderboard").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        DatabaseReference leaderboard=databaseRoot.child("leaderboard");
+                        //Used when we start shifting users down a place
+                        double mostRecentScore = totalScore;
+                        String lastUsername=FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+                        int i;
+
+                        for(i=1; i<=10; i++){
+                            Log.d("foo", "Skipping "+i);
+                            DataSnapshot currentPlacer = dataSnapshot.child(Integer.toString(i));
+                            Object currentPlacerScore = currentPlacer.child("score").getValue();
+                            if(currentPlacerScore == null)
+                                currentPlacerScore=(Object)0;
+                            double currentScoreD = ((Number)currentPlacerScore).doubleValue();
+                            Log.d("foo", "totalScore: "+totalScore);
+                            Log.d("foo", "oldScore: "+currentPlacerScore);
+                            if(currentScoreD < totalScore){
+                                break;
+                            }
+                        }
+
+                        for(; i<=10; i++){
+                            Log.d("foo", "Moving "+i);
+                            leaderboard.child(Integer.toString(i)).child("score").setValue(mostRecentScore);
+                            leaderboard.child(Integer.toString(i)).child("user").setValue(lastUsername);
+
+                            DataSnapshot currentPlacer = dataSnapshot.child(Integer.toString(i));
+                            Object currentPlacerScore = currentPlacer.child("score").getValue();
+                            if(currentPlacerScore == null)
+                                currentPlacerScore=(Object)0;
+                            double currentScoreD = ((Number)currentPlacerScore).doubleValue();
+                            if(currentScoreD < totalScore){
+                                break;
+                            }
+                            mostRecentScore = currentScoreD;
+                            lastUsername=currentPlacer.child("user").getValue(String.class);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        }
     }
 
 
@@ -352,7 +423,9 @@ public class MainActivity extends AppCompatActivity
 
             //User's home node
             DatabaseReference userHome = FirebaseDatabase.getInstance(firebaseApp)
-                    .getReference().child(firebaseAuth.getCurrentUser().getUid());
+                    .getReference()
+                    .child("android")
+                    .child(firebaseAuth.getCurrentUser().getUid());
 
             DatabaseReference profile = userHome.child("profile");
 
@@ -392,7 +465,9 @@ public class MainActivity extends AppCompatActivity
 
             //User's home node
             DatabaseReference userHome = FirebaseDatabase.getInstance(firebaseApp)
-                    .getReference().child(firebaseAuth.getCurrentUser().getUid());
+                    .getReference()
+                    .child("android")
+                    .child(firebaseAuth.getCurrentUser().getUid());
 
             DatabaseReference profile = userHome.child("profile");
 
