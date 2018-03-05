@@ -150,12 +150,8 @@ public class MainActivity extends AppCompatActivity
             fragment = new ProfileFragment();
         } else if (id == R.id.nav_leaderboard) {
             fragment = new LeaderboardFragment();
-        } else if (id == R.id.nav_view_trips) {
-
         } else if (id == R.id.nav_add_activity) {
             fragment = new AddActivityFragment();
-        } else if (id == R.id.nav_legal) {
-            fragment = new LegalFragment();
         } else if (id == R.id.nav_about) {
             fragment = new AboutFragment();
         } else if (id == R.id.nav_logout) {
@@ -444,18 +440,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public static class LegalFragment extends Fragment {
-        @Nullable
-        @Override
-        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-            return inflater.inflate(R.layout.fragment_legal, null);
-        }
-
-        @Override
-        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-            super.onViewCreated(view, savedInstanceState);
-        }
-    }
 
     //Every fragment needs a layout file
     public static class ProfileFragment extends Fragment implements View.OnClickListener, ValueEventListener {

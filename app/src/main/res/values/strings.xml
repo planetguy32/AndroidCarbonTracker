@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Android Carbon Tracker</string>
+    <string name="app_name">Conifr</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -22,7 +22,7 @@
 
     <string name="loading">"Loading..."</string>
     <string name="auth_failed">"Auth failed"</string>
-    <string name="signed_out">"Signed Out"</string>
+    <string name="signed_out"></string>
     <string name="emailpassword_status_fmt">"emailpassword_status_fmt %s %b"</string>
     <string name="firebase_status_fmt">"firebase_status_fmt %s $s"</string>
 

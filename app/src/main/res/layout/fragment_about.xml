@@ -8,14 +8,31 @@
 
     <TextView
         android:id="@+id/aboutTextView"
+        android:layout_width="277dp"
+        android:layout_height="301dp"
+        android:layout_marginBottom="92dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:lineSpacingExtra="8sp"
+        android:text="Track your carbon emissions and compete with your friends! You gain points for using modes of transportation that do not produce carbon emissions and you lose points for using transportation that does create carbon emissions. "
+        android:textAlignment="viewStart"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.505"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="About stuff goes here."
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="About"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/aboutTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
