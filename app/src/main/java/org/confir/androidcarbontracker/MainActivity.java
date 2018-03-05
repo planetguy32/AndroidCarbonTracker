@@ -150,8 +150,6 @@ public class MainActivity extends AppCompatActivity
             fragment = new ProfileFragment();
         } else if (id == R.id.nav_leaderboard) {
             fragment = new LeaderboardFragment();
-        } else if (id == R.id.nav_view_trips) {
-
         } else if (id == R.id.nav_add_activity) {
             fragment = new AddActivityFragment();
         } else if (id == R.id.nav_about) {

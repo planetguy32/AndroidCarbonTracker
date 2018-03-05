@@ -11,16 +11,12 @@
             android:id="@+id/nav_leaderboard"
             android:title="Leaderboard" />
         <item
-            android:id="@+id/nav_view_trips"
-            android:title="View Trips" />
-        <item
             android:id="@+id/nav_add_activity"
             android:title="Add Activity" />
         <item
             android:id="@+id/nav_about"
             android:title="About" />
     </group>
-
 
 
     <group android:checkableBehavior="single">
