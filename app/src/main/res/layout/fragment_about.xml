@@ -14,7 +14,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:lineSpacingExtra="8sp"
-        android:text="Track your carbon emmisions and compete with your friends! You gain points for using modes of transportations that do not produce carbon emmisions and you loose points for using transportations that do use carbon emmisons. "
+        android:text="Track your carbon emissions and compete with your friends! You gain points for using modes of transportation that do not produce carbon emissions and you lose points for using transportation that does create carbon emissions. "
         android:textAlignment="viewStart"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
