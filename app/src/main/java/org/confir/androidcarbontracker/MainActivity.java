@@ -545,6 +545,9 @@ public class MainActivity extends AppCompatActivity
             if(profile.hasChild("college")){
                 collegeEditText.setText(profile.child("college").getValue().toString());
             }
+            if(profile.hasChild("total-carbon")){
+                //TODO set thing that puts the total score onto the screen
+            }
         }
 
         @Override
