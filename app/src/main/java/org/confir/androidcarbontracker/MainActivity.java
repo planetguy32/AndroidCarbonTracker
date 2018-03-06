@@ -498,12 +498,14 @@ public class MainActivity extends AppCompatActivity
         private EditText nameEditText;
         private EditText yearEditText;
         private EditText collegeEditText;
+        private TextView scoreTextView;
         //To set the layout for the fragment, we must override 2 methods
         //onCreateView() and onViewCreated()
         //onCreateView() returns the view for the fragment.
 
         private int lastChangedByFirebaseCounter=0;
         private int lastChangedByUserCounter=0;
+
 
         @Nullable
         @Override
@@ -519,6 +521,7 @@ public class MainActivity extends AppCompatActivity
             nameEditText = (EditText) view.findViewById(R.id.nameEditText);
             yearEditText = (EditText) view.findViewById(R.id.yearEditText);
             collegeEditText = (EditText) view.findViewById(R.id.collegeEditText);
+            scoreTextView = (TextView) view.findViewById(R.id.scoreTextView);
 
             Button button=view.findViewById(R.id.profile_save_button);
             button.setOnClickListener(this);
@@ -546,7 +549,7 @@ public class MainActivity extends AppCompatActivity
                 collegeEditText.setText(profile.child("college").getValue().toString());
             }
             if(profile.hasChild("total-carbon")){
-                //TODO set thing that puts the total score onto the screen
+                scoreTextView.setText("Score: "+Integer.toString((int) (double) profile.child("total-carbon").getValue(Double.class)));
             }
         }
 
