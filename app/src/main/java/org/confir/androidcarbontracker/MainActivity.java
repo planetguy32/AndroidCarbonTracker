@@ -103,6 +103,22 @@ public class MainActivity extends AppCompatActivity
                 });
 
 
+        /* DEVELOPER USE ONLY
+        //Setup the leaderboard
+
+        for(int i=1; i<=20; i++){
+            wipeLeaderboardSlot(i);
+        }
+        //*/
+
+    }
+
+    private static void wipeLeaderboardSlot(int slot){
+        FirebaseDatabase db=FirebaseDatabase.getInstance(firebaseApp);
+        DatabaseReference ref=db.getReference().child("android").child("leaderboard").child(Integer.toString(slot));
+        ref.child("user").setValue("Nobody");
+        ref.child("score").setValue(-1);
+        ref.child("uid").setValue("nope");
     }
 
 
@@ -328,8 +344,8 @@ public class MainActivity extends AppCompatActivity
                         Toast.LENGTH_SHORT).show();
 
                 /*************************
-                 * Update LEaderboard
-                 ****************************/
+                 * Update the leaderboard
+                 *****************************/
 
                 final double totalScore=totalCarbon;
 
@@ -344,7 +360,43 @@ public class MainActivity extends AppCompatActivity
 
                         int i;
 
-                        for(i=1; i<=10; i++){
+                        //Note: We use 20 leaderboard slots even though we only show 10.
+                        //This is because if a user's score drops, they might fall off the leaderboard
+                        //if 11th place is higher than their new score, so we must keep around a few
+                        //runners-up in case that happens.
+
+                        //Find our old entry in the leaderboard
+                        for(i=1; i<=20; i++){
+                            DataSnapshot user=leaderboardSnapshot.child(Integer.toString(i));
+                            //Note: Depends on lastUid==our UID; may break if not directly below
+                            //the fn's setup code
+                            if(user.child("uid").getValue(String.class).equals(lastUid)){
+                                break;
+                            }
+                        }
+
+                        //Shift everyone else up
+                        for(; i<=19; i++){
+                            leaderboard.child(Integer.toString(i)).child("score").setValue(
+                                    leaderboardSnapshot.child(Integer.toString(i+1)).child("score").getValue(Double.class).doubleValue()
+                            );
+                            leaderboard.child(Integer.toString(i)).child("user").setValue(
+                                    leaderboardSnapshot.child(Integer.toString(i+1)).child("user").getValue(String.class)
+                            );
+                            leaderboard.child(Integer.toString(i)).child("uid").setValue(
+                                    leaderboardSnapshot.child(Integer.toString(i+1)).child("uid").getValue(String.class)
+                            );
+                        }
+
+                        //We just duplicated the last slot on the leaderboard by copying everyone
+                        //else up a slot.
+                        //Reset it
+                        if(i==20){
+                            wipeLeaderboardSlot(20);
+                        }
+
+                        //Find where we belong on the leaderboard, if at all
+                        for(i=1; i<=20; i++){
                             //Log.d("foo", "Skipping "+i);
                             DataSnapshot currentPlacer = leaderboardSnapshot.child(Integer.toString(i));
                             double currentScoreD = ((Number)currentPlacer.child("score").getValue()).doubleValue();
@@ -355,10 +407,9 @@ public class MainActivity extends AppCompatActivity
                             }
                         }
 
-                        for(; i<=10; i++){
-                            //Log.d("foo", "Moving "+i);
+                        //Place someone in the leaderboard and shift users down as needed
+                        for(;i<=20; i++){
                             DataSnapshot snapshot = leaderboardSnapshot.child(Integer.toString(i));
-
                             leaderboard.child(Integer.toString(i)).child("score").setValue(mostRecentScore);
                             leaderboard.child(Integer.toString(i)).child("user").setValue(lastUsername);
                             leaderboard.child(Integer.toString(i)).child("uid").setValue(lastUid);
@@ -370,6 +421,7 @@ public class MainActivity extends AppCompatActivity
 
                             if(lastUid.equals(firebaseAuth.getCurrentUser().getUid()))
                                 break;
+
                         }
                     }
 
